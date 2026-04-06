@@ -1,0 +1,83 @@
+create database orders;
+use orders;
+CREATE TABLE EcommerceOrders (
+order_id INT PRIMARY KEY,
+customer_name VARCHAR(30),
+product_name VARCHAR(30),
+category VARCHAR(20),
+order_date DATE,
+city VARCHAR(20),
+payment_mode VARCHAR(20),
+quantity INT,
+selling_price DECIMAL(10,2),
+total_amount DECIMAL(10,2)
+);
+
+
+select * from ecommerceorders;
+
+# Total Revenue
+select sum(total_amount)"Total_Revenue" from ecommerceorders;
+
+# Average Order Value
+select round(avg(total_amount),2)"Average_Order_Value" from ecommerceorders;
+
+# Revenue by Category
+select category,sum(total_amount)
+from ecommerceorders
+group by category;
+
+# City Wise Performance
+select city,round(avg(total_amount),2) as Avg_Orders_Values
+from ecommerceorders
+group by city;
+
+# Top Category With Highest Revenue
+select category,sum(total_amount)
+from ecommerceorders
+group by category
+order by sum(total_amount) desc
+limit 1;
+
+# Category Performance Tag
+select category,SUM(total_amount) as revenue,
+case 
+    when SUM(total_amount) > 150000 then 'Top Category'
+    else 'Normal'
+end as category_status
+from  EcommerceOrders
+group by category;
+
+# Average Order Value Per Customers
+select  customer_name,round(avg(total_amount),2) as avg_order_value
+from EcommerceOrders
+group by customer_name
+order by  avg_order_value desc;
+
+# Monthly Revenue Trend 
+select date_format(order_date,'%y-%m') as month, sum(total_amount) as Revenue
+from ecommerceorders
+group by month
+order by month;
+
+# Most Used Payment Mode
+select payment_mode,count(*) as total_orders
+from ecommerceorders
+group by payment_mode
+order by total_orders desc;
+
+# Payment Mode Generating the total Revenue
+select payment_mode,sum(total_amount) as revenue
+from ecommerceorders
+group by payment_mode
+order by revenue ;
+
+# Sales Contribution % By Category
+select  category,sum(total_amount) as revenue,
+round((sum(total_amount) / 
+      (select sum(total_amount) from ecommerceorders)) * 100,2) as contribution_percentage
+from ecommerceorders
+group by  category
+order by  contribution_percentage desc;
+
+
